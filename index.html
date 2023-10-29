@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=320, initial-scale=1.0" />
+
+    <title>Логистика</title>
+
+    <link rel="stylesheet" href="./css/style.css" />
+
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=9ec11267-3c32-4405-837b-c2056aa70efb&amp;lang=ru_RU"></script>
+  </head>
+
+  <body>
+    <div class="logistics-block">
+      <div class="logistics-block__title">Логистика</div>
+
+      <div class="couting-map-wrapper">
+        <div class="couting-price">
+          <div class="couting-price__loading block-loading">
+            <div class="loader-wrapper">
+              <div class="Loader">
+                <div class="Loader Loader-inner"></div>
+              </div>
+            </div>
+          </div>
+
+          <h2>Логистика</h2>
+
+          <p>
+            Укажите адрес загрузки и доставки — стоимость рассчитается
+            автоматически
+          </p>
+
+          <div class="inputs-address-couting">
+            <div class="text-field text-field_floating-2">
+              <input
+                class="text-field__input"
+                type="text"
+                id="down-address"
+                name="down-address"
+                placeholder="Адрес загрузки"
+              />
+              <label class="text-field__label" for="down-address"
+                >Адрес загрузки</label
+              >
+            </div>
+
+            <div class="text-field text-field_floating-2 input-delivery">
+              <input
+                class="text-field__input"
+                id="delivery-address"
+                name="delivery-address"
+                placeholder="Адрес доставки"
+              />
+              <label class="text-field__label" for="delivery-address"
+                >Адрес доставки</label
+              >
+            </div>
+          </div>
+
+          <div class="delivery-results">
+            <div class="delivery-results__toprow">
+              <div class="delivery-results__toprowleft">
+                <span class="delivery-results__distance-title">Расстояние</span>
+                <span class="delivery-results__distance-value">159 км</span>
+              </div>
+
+              <div class="delivery-results__toprowright">
+                <span class="delivery-results__price-title"
+                  >Стоимость доставки *</span
+                >
+                <span class="delivery-results__price-value">≈ 34 000 ₽</span>
+              </div>
+            </div>
+
+            <p class="delivery-results__bottomrow">
+              * Точную стоимость доставки уточняйте у своего персонального
+              менеджера.
+            </p>
+          </div>
+        </div>
+
+        <div id="map" class="couting-map map">
+          <div class="couting-map__loading block-loading">
+            <div class="loader-wrapper">
+              <div class="Loader">
+                <div class="Loader Loader-inner"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./js/main.js"></script>
+  </body>
+</html>
