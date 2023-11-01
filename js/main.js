@@ -1,5 +1,9 @@
+const IDENTIFIER_INPUT_DOWN_ADDRESS = 1;
+const IDENTIFIER_INPUT_DELIVERY_ADDRESS = 2;
+
 const MINIMUM_COST = 500; // Минимальная стоимость.
 const DELIVERY_TARIFF = 75; // Стоимость за километр.
+
 let MY_MAP = null;
 const MAP_POINTERS = {
   error: null,
@@ -20,14 +24,14 @@ const showResultMapAndInfo = (multiRoute) => {
   MY_MAP.geoObjects.add(multiRoute);
 
   multiRoute.model.events
-    .add("requestsuccess", (event) => {
-      const routes = event.get("target").getRoutes();
-      const distance = Math.ceil(routes[0].properties.get("distance").value);
+    .add('requestsuccess', (event) => {
+      const routes = event.get('target').getRoutes();
+      const distance = Math.ceil(routes[0].properties.get('distance').value);
 
       const kilometrs = Math.ceil(distance / 1000);
 
       document.querySelector(
-        ".delivery-results__distance-value"
+        '.delivery-results__distance-value'
       ).innerHTML = `${kilometrs} км`;
 
       const priceDelivery =
@@ -36,25 +40,25 @@ const showResultMapAndInfo = (multiRoute) => {
           : kilometrs * DELIVERY_TARIFF;
 
       document.querySelector(
-        ".delivery-results__price-value"
+        '.delivery-results__price-value'
       ).innerHTML = `≈ ${priceDelivery} ₽`;
 
-      document.querySelector(".delivery-results__toprowleft").style.display =
-        "block";
+      document.querySelector('.delivery-results__toprowleft').style.display =
+        'block';
 
-      document.querySelector(".delivery-results__toprowright").style.display =
-        "block";
+      document.querySelector('.delivery-results__toprowright').style.display =
+        'block';
 
-      document.querySelector(".couting-price__loading").style.display = "none";
-      document.querySelector(".couting-map__loading").style.display = "none";
+      document.querySelector('.couting-price__loading').style.display = 'none';
+      document.querySelector('.couting-map__loading').style.display = 'none';
     })
-    .add("requestfail", (event) => {
-      console.log(`Error: ${event.get("error").message}`);
+    .add('requestfail', (event) => {
+      console.log(`Error: ${event.get('error').message}`);
     });
 };
 
 const createMapBlock = () => {
-  return new ymaps.Map("map", {
+  return new ymaps.Map('map', {
     center: [45.060491, 38.97304],
     zoom: 9,
     controls: [],
@@ -76,7 +80,7 @@ const createRouter = () => {
   );
 
   ymaps.modules.require(
-    ["MultiRouteCustomView"],
+    ['MultiRouteCustomView'],
     function (MultiRouteCustomView) {
       // Создаем экземпляр текстового отображения модели мультимаршрута.
       // см. файл custom_view.js
@@ -101,8 +105,8 @@ const createRouter = () => {
 };
 
 const createAddress = (obj) => {
-  let mapContainer = document.querySelector("#map");
-  let bounds = obj.properties.get("boundedBy");
+  let mapContainer = document.querySelector('#map');
+  let bounds = obj.properties.get('boundedBy');
 
   // Рассчитываем видимую область для текущего положения пользователя.
   let mapState = ymaps.util.bounds.getCenterAndZoom(bounds, [
@@ -110,30 +114,30 @@ const createAddress = (obj) => {
     mapContainer.offsetHeight,
   ]);
 
-  if (MAP_POINTERS.inputSelected === 1) {
+  if (MAP_POINTERS.inputSelected === IDENTIFIER_INPUT_DOWN_ADDRESS) {
     MAP_POINTERS.pointOne.coords = mapState.center;
     MAP_POINTERS.pointOne.fullAddress = [
       obj.getCountry(),
       obj.getAddressLine(),
-    ].join(", ");
+    ].join(', ');
     MAP_POINTERS.pointOne.shortAddress = [
       obj.getThoroughfare(),
       obj.getPremiseNumber(),
       obj.getPremise(),
-    ].join(" ");
+    ].join(' ');
   }
 
-  if (MAP_POINTERS.inputSelected === 2) {
+  if (MAP_POINTERS.inputSelected === IDENTIFIER_INPUT_DELIVERY_ADDRESS) {
     MAP_POINTERS.pointTwo.coords = mapState.center;
     MAP_POINTERS.pointTwo.fullAddress = [
       obj.getCountry(),
       obj.getAddressLine(),
-    ].join(", ");
+    ].join(', ');
     MAP_POINTERS.pointTwo.shortAddress = [
       obj.getThoroughfare(),
       obj.getPremiseNumber(),
       obj.getPremise(),
-    ].join(" ");
+    ].join(' ');
   }
 
   createRouter();
@@ -147,27 +151,32 @@ const preGeocodeEvent = (value, prevInputSelect, currentInput) => {
     MAP_POINTERS.inputSelected != null &&
     MAP_POINTERS.inputSelected != prevInputSelect
   ) {
-    document.querySelector(".couting-price__loading").style.display = "block";
-    document.querySelector(".couting-map__loading").style.display = "block";
+    document.querySelector('.couting-price__loading').style.display = 'block';
+    document.querySelector('.couting-map__loading').style.display = 'block';
   }
 
   ymaps.geocode(value).then(
     function (res) {
       let obj = res.geoObjects.get(0);
+
       let error;
 
       if (!obj) {
-        error = "Такой адрес не найден";
+        error = 'Такой адрес не найден';
       }
 
       // Если геокодер возвращает пустой массив или неточный результат, то показываем ошибку.
+
       if (error) {
         MAP_POINTERS.error = true;
 
-        if (MAP_POINTERS.inputSelected === 1)
-          document.querySelector("#down-address").value = error;
-        else if (MAP_POINTERS.inputSelected === 2)
-          document.querySelector("#delivery-address").value = error;
+        if (MAP_POINTERS.inputSelected === IDENTIFIER_INPUT_DOWN_ADDRESS) {
+          document.querySelector('#down-address').value = error;
+        } else if (
+          MAP_POINTERS.inputSelected === IDENTIFIER_INPUT_DELIVERY_ADDRESS
+        ) {
+          document.querySelector('#delivery-address').value = error;
+        }
       } else {
         createAddress(obj);
       }
@@ -184,17 +193,25 @@ ymaps.ready(() => {
   MY_MAP = createMapBlock();
 
   // Создаем подсказку ввода адреса на каждом из полей средствами Яндекс.Карты
-  let suggestViewDownAddress = new ymaps.SuggestView("down-address");
-  let suggestViewDeliveryAddress = new ymaps.SuggestView("delivery-address");
+  let suggestViewDownAddress = new ymaps.SuggestView('down-address');
+  let suggestViewDeliveryAddress = new ymaps.SuggestView('delivery-address');
 
   // Если выбран пункт из подсказки
-  suggestViewDownAddress.events.add("select", (event) => {
-    preGeocodeEvent(event.get("item").value, MAP_POINTERS.inputSelected, 1); // Передаем на функцию адрес из первого поля
+  suggestViewDownAddress.events.add('select', (event) => {
+    preGeocodeEvent(
+      event.get('item').value,
+      MAP_POINTERS.inputSelected,
+      IDENTIFIER_INPUT_DOWN_ADDRESS
+    ); // Передаем на функцию адрес из первого поля
   });
 
   // Если выбран пункт из подсказки
-  suggestViewDeliveryAddress.events.add("select", (event) => {
-    preGeocodeEvent(event.get("item").value, MAP_POINTERS.inputSelected, 2); // Передаем на функцию адрес из первого поля
+  suggestViewDeliveryAddress.events.add('select', (event) => {
+    preGeocodeEvent(
+      event.get('item').value,
+      MAP_POINTERS.inputSelected,
+      IDENTIFIER_INPUT_DELIVERY_ADDRESS
+    ); // Передаем на функцию адрес из первого поля
   });
 });
 // __________________________________________________ Все начинается здесь
